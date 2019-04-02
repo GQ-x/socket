@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml1-transitional.dtd">
+<!--Basic client form-->
+<html>
+<head>
+<title>Socket.IO</title>
+<!--provide client javascript path from server Socket.IO
+When you look at the actual server, there is no socket.io.js file, but the Socket.IO module automatically generates it
+The provision of the socket.io.js file is controlled by the browser client setting, and the default value is provided
+When you call socket.io.js, you can use the io variable which is the object of Socket.IO in the source-->
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+    <div id="contents" style="width:300px; height:200px; overflow:auto; border:1px solid #000;"></div>
+    <script type="text/javascript">
+    window.onload = function() {
+        // Socket local access connection
+        let socket = io.connect('http://localhost:3000', {
+            'reconnect': true,
+            'resource': 'socket.io'
+        });
+
+        // Send a connected string message to the server connect event
+        socket.emit('connect', 'connected');
+
+        // Send a message to server from client event
+        socket.emit('from client', {text: 'message for send to client'});
+
+        // The server receives the from server event and calls the printMessage method from the callback function
+        socket.on('from server', function(data) {
+            printMessage(data.text);
+        });
+
+        /**
+         * Add a p tag to the above contents div tag to take a message
+         * @param msg
+         */
+        function printMessage(msg) {
+            let contents = document.getElementById('contents');
+            let p = document.createElement("p");
+            if (p.textContent) {
+                p.textContent = msg;
+            } else {
+                p.innerText = msg;
+            }
+            contents.appendChild(p);
+        }
+    }
+    </script>
+    </body>
+</html>
